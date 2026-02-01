@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>SVG Drawing Pad</title>
+<style>
+  body {
+    font-family: Arial;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background: #f4f4f4;
+  }
+
+  svg {
+    border: 2px solid black;
+    background: white;
+    cursor: crosshair;
+  }
+</style>
+</head>
+
+<body>
+
+<svg id="canvas" width="600" height="400"></svg>
+
+<script>
+const svg = document.getElementById("canvas");
+
+let drawing = false;
+let currentLine = null;
+
+svg.addEventListener("mousedown", (e) => {
+  drawing = true;
+
+  const { x, y } = getMousePosition(e);
+
+  currentLine = document.createElementNS(
+    "http://www.w3.org/2000/svg",
+    "polyline"
+  );
+
+  currentLine.setAttribute("points", `${x},${y}`);
+  currentLine.setAttribute("stroke", "black");
+  currentLine.setAttribute("stroke-width", "2");
+  currentLine.setAttribute("fill", "none");
+
+  svg.appendChild(currentLine);
+});
+
+svg.addEventListener("mousemove", (e) => {
+  if (!drawing) return;
+
+  const { x, y } = getMousePosition(e);
+  const points = currentLine.getAttribute("points");
+
+  currentLine.setAttribute("points", points + ` ${x},${y}`);
+});
+
+svg.addEventListener("mouseup", () => {
+  drawing = false;
+});
+
+svg.addEventListener("mouseleave", () => {
+  drawing = false;
+});
+
+function getMousePosition(event) {
+  const rect = svg.getBoundingClientRect();
+  return {
+    x: event.clientX - rect.left,
+    y: event.clientY - rect.top
+  };
+}
+</script>
+
+</body>
+</html>
